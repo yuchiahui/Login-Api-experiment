@@ -55,7 +55,7 @@ function Google_disconnect() {
 }
 
 $(document).ready(function () {
-	getStatus();
+//	getStatus();
 	$('A[name="googleSignOut"]').on('click', function () {
 		signOut();
 	});

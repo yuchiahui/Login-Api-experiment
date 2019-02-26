@@ -18,6 +18,7 @@
 					<META name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 					<SCRIPT src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></SCRIPT>
 					<SCRIPT src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></SCRIPT>
+					<SCRIPT src="/resources/js/jquery-3.3.1.min.js"></SCRIPT>
 					<SCRIPT src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></SCRIPT>
 					<SCRIPT src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></SCRIPT>
 					<LINK rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"></LINK>
@@ -34,12 +35,15 @@
 					<META name="google-signin-client_id" content="386872756196-ct0oldlv5utvq3oi0lulegsgubrkjkn8.apps.googleusercontent.com"/>
 					<SCRIPT src="https://apis.google.com/js/platform.js?onload=init"></SCRIPT>
 					<SCRIPT src="/resources/js/googleSignIn.js"></SCRIPT>
-				
+					
+					<!-- Line Log-In-->					
+					<SCRIPT src="/resources/js/lineLogIn.js"></SCRIPT>
+								
 					<TITLE>Login Api</TITLE>
 				</HEAD>
 				<BODY>
 					<MAIN class="container">
-						<!--						<DIV style="height:60px;">
+						<!--<DIV style="height:60px;">
 							<DIV id="status"></DIV>
 							<DIV id="accountNickname"></DIV>
 						</DIV>-->
@@ -65,8 +69,21 @@
 						<DIV style="height:100px;padding:15px;">
 							<DIV id="lineStatus"></DIV>
 							<DIV id="lineName"></DIV>
-							
+							<!--https://access.line.me/oauth2/v2.1/authorize?
+							response_type=code&
+							client_id=1648812380&
+							redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Flogin&
+							state=opybJ409iX9OLmzpTV428tOoeRTkCVkoJjpkaEWBstk&
+							scope=openid%20profile&
+							nonce=HuAeZDDC3FN0-ov3_CBWQ6Wk9dmGrJLVKa91Lv42wRg-->
 							<FORM action="https://local-login.herokuapp.com/" method="GET">
+								<!--<FORM action="https://access.line.me/oauth2/v2.1/authorize" method="GET">
+								<INPUT name="response_type" type="hidden" value="code"/>
+								<INPUT name="client_id" type="hidden" value="1648812380"/>
+								<INPUT name="redirect_uri" type="hidden" value="1648812380"/>
+								<INPUT name="state" type="hidden" value="opybJ409iX9OLmzpTV428tOoeRTkCVkoJjpkaEWBstk"/>
+								<INPUT name="scope" type="hidden" value="openid%20email%20profile"/>
+								<INPUT name="nonce" type="hidden" value="HuAeZDDC3FN0-ov3_CBWQ6Wk9dmGrJLVKa91Lv42wRg"/>-->
 								<BUTTON type="submit" class="btn btn-success">Line</BUTTON>
 							</FORM>
 						</DIV>

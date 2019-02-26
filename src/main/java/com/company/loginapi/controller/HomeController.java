@@ -2,16 +2,25 @@ package com.company.loginapi.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -19,8 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 @Controller
 public class HomeController {
@@ -37,9 +44,88 @@ public class HomeController {
 		String xmlFilePath = contextPath + File.separator + xmlFile;
 		Source source = new StreamSource(new File(xmlFilePath));
 
+		String code = request.getQueryString();
+
+		System.out.println(code);
+
 		ModelAndView model = new ModelAndView("line");
 		model.addObject("xmlSource", source);
 		return model;
+	}
+
+	@RequestMapping(value = "/getToken")
+	public void getToken(HttpServletRequest request,
+		HttpServletResponse response, String code) throws IOException, ParserConfigurationException {
+
+		//建立 CloseableHttpClient & HttpPost
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+
+		//取得 access token
+		HttpPost httppost = new HttpPost("https://api.line.me/oauth2/v2.1/token");
+
+		//設定 Request parameters and other properties.
+		//取得 access_token 所需參數如下:
+		@SuppressWarnings("Convert2Diamond")
+		List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+		params.add(new BasicNameValuePair("grant_type", "authorization_code"));
+		params.add(new BasicNameValuePair("code", code));
+		params.add(new BasicNameValuePair("redirect_uri", "http://localhost:8080/login"));
+		params.add(new BasicNameValuePair("client_id", "1648812380"));
+		params.add(new BasicNameValuePair("client_secret", "b94aa493b9bb45066b531b3b46efad30"));
+		httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+		httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+		//Execute and get the response.
+		CloseableHttpResponse tokenResponse = httpclient.execute(httppost);
+		HttpEntity tokenEntity = tokenResponse.getEntity();
+
+		String tokenResult = "";
+
+		System.out.println("token--getStatusLine: " + tokenResponse.getStatusLine());
+		if (tokenResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			if (tokenEntity != null) {
+				tokenResult = EntityUtils.toString(tokenEntity, "UTF-8");
+				System.out.println("token: " + tokenResult);
+			}
+		} else {
+			System.out.println("token--ERROR");
+
+		}
+		System.out.println("token--httppost: " + httppost.toString());
+//		tokenResponse.close();
+
+		JSONObject tokenJSONObject = new JSONObject(tokenResult);
+		System.out.println("token--finished");
+
+		//取得 user profiles
+		HttpGet httpget = new HttpGet("https://api.line.me/v2/profile");
+
+		//設定 Authorization
+		httpget.setHeader("Authorization", "Bearer " + tokenJSONObject.get("access_token"));
+
+		CloseableHttpResponse profileResponse = httpclient.execute(httpget);
+		HttpEntity profileEntity = profileResponse.getEntity();
+
+		String profileResult = "";
+
+		System.out.println("profile--getStatusLine: " + profileResponse.getStatusLine());
+		if (profileResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			if (profileEntity != null) {
+				profileResult = EntityUtils.toString(profileEntity, "UTF-8");
+				System.out.println("profile: " + profileResult);
+			}
+		} else {
+			System.out.println("profile--ERROR");
+
+		}
+		System.out.println("profile--httppost: " + httpget.toString());
+		//profileResponse.close();
+
+		JSONObject profileJSONObject = new JSONObject(profileResult);
+
+		//傳回前端
+		response.getWriter().print(profileJSONObject.toString());
+		System.out.println("profile--finished");
 	}
 
 	@SuppressWarnings("null")
