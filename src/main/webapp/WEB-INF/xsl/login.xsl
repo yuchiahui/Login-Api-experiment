@@ -69,23 +69,11 @@
 						<DIV style="height:100px;padding:15px;">
 							<DIV id="lineStatus"></DIV>
 							<DIV id="lineName"></DIV>
-							<!--https://access.line.me/oauth2/v2.1/authorize?
-							response_type=code&
-							client_id=1648812380&
-							redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Flogin&
-							state=opybJ409iX9OLmzpTV428tOoeRTkCVkoJjpkaEWBstk&
-							scope=openid%20profile&
-							nonce=HuAeZDDC3FN0-ov3_CBWQ6Wk9dmGrJLVKa91Lv42wRg-->
 							<FORM action="https://local-login.herokuapp.com/" method="GET">
-								<!--<FORM action="https://access.line.me/oauth2/v2.1/authorize" method="GET">
-								<INPUT name="response_type" type="hidden" value="code"/>
-								<INPUT name="client_id" type="hidden" value="1648812380"/>
-								<INPUT name="redirect_uri" type="hidden" value="1648812380"/>
-								<INPUT name="state" type="hidden" value="opybJ409iX9OLmzpTV428tOoeRTkCVkoJjpkaEWBstk"/>
-								<INPUT name="scope" type="hidden" value="openid%20email%20profile"/>
-								<INPUT name="nonce" type="hidden" value="HuAeZDDC3FN0-ov3_CBWQ6Wk9dmGrJLVKa91Lv42wRg"/>-->
-								<BUTTON type="submit" class="btn btn-success">Line</BUTTON>
+								<BUTTON type="submit" class="btn btn-success">Line-heroku</BUTTON>
 							</FORM>
+							
+							<BUTTON name="login" class="btn btn-success">Line-login</BUTTON>
 						</DIV>
 					</MAIN>
 				</BODY>

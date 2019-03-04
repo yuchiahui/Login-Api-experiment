@@ -32,8 +32,13 @@
 					<MAIN class="container">
 						<FORM action="/getToken/" method="POST">
 							<DIV style="padding:15px;">
+								<DIV style="padding:15px;">
+									<B>已登入Line</B>
+								</DIV>
 								<BUTTON type="submit" class="btn btn-success">取得用戶資料</BUTTON>
-								<DIV id="userProfile"></DIV>
+								<DIV style="padding:15px;">
+									<P></P>
+								</DIV>
 							</DIV>
 						</FORM>
 					</MAIN>

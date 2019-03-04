@@ -1,3 +1,4 @@
+
 function getStatus() {
 	var rv = gapi.auth2.getAuthInstance().isSignedIn.get();
 	console.log("isSignedIn: " + rv);
@@ -20,16 +21,27 @@ function onSignIn(googleUser) {
 	document.getElementById('googleStatus').innerHTML = 'Thanks for logging in, ' + profile.getGivenName();
 	document.getElementById('googleName').innerHTML = profile.getName() + ' ' + profile.getEmail();
 	// The ID token you need to pass to your backend:
-	var id_token = googleUser.getAuthResponse().id_token;
-	console.log("ID Token: " + id_token);
+	var idtoken = googleUser.getAuthResponse().id_token.toString();
+	console.log("ID Token: " + idtoken);
 
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'http://localhost:8080/jwtTest');
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	var jdata = {idtoken: idtoken};
+//	$('DIV[name="googleSignIn"]').on('click', function () {
+	$.post("/jwtTest",
+		jdata,
+		function (data) {
+//			alert("data: " + data);
+			alert(profile.getGivenName() + " 你好！");
+		});
+//	});
+
+
+//		var xhr = new XMLHttpRequest();
+//		xhr.open('POST', 'http://localhost:8080/jwtTest');
+//		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 //	xhr.onload = function () {
 //		console.log('Signed in as: ' + xhr.responseText);
 //	};
-	xhr.send('idtoken=' + id_token);
+//		xhr.send('idtoken=' + id_token);
 }
 
 function signOut() {
