@@ -3,7 +3,7 @@ package com.company.loginapi.controller;
 import com.sun.javafx.util.Utils;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -32,19 +32,18 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+@RestController
 public class HomeController {
 
 	@RequestMapping(value = "/")
@@ -68,6 +67,11 @@ public class HomeController {
 		return model;
 	}
 
+	/**
+	 * 產生隨機字串
+	 *
+	 * @return 隨機字串
+	 */
 	public String getRandomString() {
 		SecureRandom RANDOM = new SecureRandom();
 		byte[] bytes = new byte[32];
@@ -79,8 +83,8 @@ public class HomeController {
 //	@CrossOrigin(origins = "https://access.line.me", maxAge = 3600)
 	@RequestMapping(value = "/linelogin", method = RequestMethod.GET)
 	@SuppressWarnings("ConvertToTryWithResources")
-	public @ResponseBody
-	String linelogin(HttpServletRequest request,
+//	@ResponseBody
+	public String linelogin(HttpServletRequest request,
 		HttpServletResponse response) throws IOException, ParserConfigurationException, URISyntaxException {
 
 		//建立 CloseableHttpClient & HttpGet
@@ -88,7 +92,7 @@ public class HomeController {
 		URIBuilder builder = new URIBuilder("https://access.line.me/oauth2/v2.1/authorize");
 
 		//Line Log in 身分驗證, 取得 code
-//		HttpGet httpget = new HttpGet("https://access.line.me/oauth2/v2.1/authorize");
+//		HttpGet httpGet = new HttpGet("https://access.line.me/oauth2/v2.1/authorize");
 		//設定 Request parameters and other properties.
 		//取得 code 所需參數如下:
 		//參數值為 https://developers.line.biz/console/channel/... 設定之內容
@@ -116,7 +120,7 @@ public class HomeController {
 		HttpGet httpget = new HttpGet(builder.build());
 
 //		URI uri = new URIBuilder("https://access.line.me/oauth2/v2.1/authorize").addParameters(params).build();
-//		httpget.setHeader("Access-Control-Allow-Origin", "*");
+//		httpGet.setHeader("Access-Control-Allow-Origin", "*");
 		//Execute and get the response.
 		CloseableHttpResponse codeResponse = httpclient.execute(httpget);
 //		codeResponse.setHeader("Location", builder.build().toString());
@@ -124,10 +128,10 @@ public class HomeController {
 
 		String codeResult = "";
 
-//		CloseableHttpClient httpclient = HttpClients.createDefault();
+//		CloseableHttpClient closeableHttpClient = HttpClients.createDefault();
 		HttpClientContext context = HttpClientContext.create();
-//		HttpGet httpget = new HttpGet("http://localhost:8080/");
-//		CloseableHttpResponse response = httpclient.execute(httpget, context);
+//		HttpGet httpGet = new HttpGet("http://localhost:8080/");
+//		CloseableHttpResponse response = closeableHttpClient.execute(httpGet, context);
 
 		HttpHost target = context.getTargetHost();
 		List<URI> redirectLocations = context.getRedirectLocations();
@@ -148,107 +152,125 @@ public class HomeController {
 		}
 
 		System.out.println("code--httppost: " + httpget.toString());
-//		tokenResponse.close();
+//		closeableHttpResponseOfToken.close();
 
 		System.out.println("code--finished");
 		codeResponse.close();
 
 //		return codeResult;
 //		return uri.toString();
-//		return new ModelAndView("redirect:" + httpget.getURI().toString());
+//		return new ModelAndView("redirect:" + httpGet.getURI().toString());
 		System.out.println(httpget.getURI().toString());
 		return "redirect:" + httpget.getURI().toString();
 
 	}
 
-	@RequestMapping(value = "/getToken")
+	@RequestMapping(value = "/getToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@SuppressWarnings("ConvertToTryWithResources")
-	public @ResponseBody
-	String getToken(HttpServletRequest request,
-		HttpServletResponse response, String code) throws IOException, ParserConfigurationException {
+//	@ResponseBody
+	public String getToken(HttpServletRequest request, HttpServletResponse response, String code) throws IOException, ParserConfigurationException {
+		JSONObject jSONObject = new JSONObject();
 
 		//建立 CloseableHttpClient & HttpPost
-		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpClient closeableHttpClient = HttpClients.createDefault();
 
 		//取得 access token
-		HttpPost httppost = new HttpPost("https://api.line.me/oauth2/v2.1/token");
+		HttpPost httpPost = new HttpPost("https://api.line.me/oauth2/v2.1/token");
 
 		//設定 Request parameters and other properties.
 		//取得 access_token 所需參數如下:
 		//參數值為 https://developers.line.biz/console/channel/... 設定之內容
-		@SuppressWarnings("Convert2Diamond")
-		List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-		params.add(new BasicNameValuePair("grant_type", "authorization_code"));
+		//108.03.04 以下設定為系統參數(tomcat setenv.bat)
+		List<NameValuePair> params = new ArrayList<>(2);
+		params.add(new BasicNameValuePair("grant_type", System.getenv("LINE_GRANT_TYPE")));
 		params.add(new BasicNameValuePair("code", code));
-		params.add(new BasicNameValuePair("redirect_uri", "http://localhost:8080/login"));
-		params.add(new BasicNameValuePair("client_id", "1648812380"));
-		params.add(new BasicNameValuePair("client_secret", "b94aa493b9bb45066b531b3b46efad30"));
-		httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-		httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		params.add(new BasicNameValuePair("redirect_uri", System.getenv("LINE_REDIRECT_URI")));
+		params.add(new BasicNameValuePair("client_id", System.getenv("LINE_CLIENT_ID")));
+		params.add(new BasicNameValuePair("client_secret", System.getenv("LINE_CLIENT_SECRET")));
+		httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+		httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
 		//Execute and get the response.
-		CloseableHttpResponse tokenResponse = httpclient.execute(httppost);
-		HttpEntity tokenEntity = tokenResponse.getEntity();
+		CloseableHttpResponse closeableHttpResponseOfToken = closeableHttpClient.execute(httpPost);
+		HttpEntity httpEntityOfToken = closeableHttpResponseOfToken.getEntity();
 
-		String tokenResult = "";
+		String stringToken = "";
 
-		System.out.println("token--getStatusLine: " + tokenResponse.getStatusLine());
-		if (tokenResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			if (tokenEntity != null) {
-				tokenResult = EntityUtils.toString(tokenEntity, "UTF-8");
-				System.out.println("token: " + tokenResult);
+		System.out.println("token--getStatusLine: " + closeableHttpResponseOfToken.getStatusLine());
+		if (closeableHttpResponseOfToken.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			if (httpEntityOfToken != null) {
+				stringToken = EntityUtils.toString(httpEntityOfToken, "UTF-8");
+				System.out.println("token: " + stringToken);
+			} else {
+				jSONObject.put("errorMessage", "ERROR! closeableHttpResponseOfToken.getEntity() = null");
+				return jSONObject.toString();
 			}
 		} else {
 			System.out.println("token--ERROR");
+			jSONObject.put("errorMessage", "ERROR! closeableHttpResponseOfToken.getStatusLine() = " + closeableHttpResponseOfToken.getStatusLine());
+			return jSONObject.toString();
 		}
 
-		System.out.println("token--httppost: " + httppost.toString());
-//		tokenResponse.close();
+		System.out.println("token--httppost: " + httpPost.toString());
 
-		JSONObject tokenJSONObject = new JSONObject(tokenResult);
+		JSONObject jsonObjectOfToken = new JSONObject(stringToken);
 		System.out.println("token--finished");
-		tokenResponse.close();
+		closeableHttpResponseOfToken.close();
 
-		String[] jwtArray = decodeJWT(tokenJSONObject.get("id_token").toString(), "Line");
+		String[] jwtArray = decodeJWT(jsonObjectOfToken.get("id_token").toString(), "Line");
 		if (jwtArray == null) {
 			System.out.println("decodeJWT Error!--getToken");
+			jSONObject.put("errorMessage", "ERROR! decode JWT failed");
+			return jSONObject.toString();
 		} else {
 			System.out.println(Arrays.toString(jwtArray));
 		}
 
 		//取得 user profiles
-		HttpGet httpget = new HttpGet("https://api.line.me/v2/profile");
+		HttpGet httpGet = new HttpGet("https://api.line.me/v2/profile");
 
 		//設定 Authorization
-		httpget.setHeader("Authorization", "Bearer " + tokenJSONObject.get("access_token").toString());
+		httpGet.setHeader("Authorization", "Bearer " + jsonObjectOfToken.get("access_token").toString());
 
-		CloseableHttpResponse profileResponse = httpclient.execute(httpget);
-		HttpEntity profileEntity = profileResponse.getEntity();
+		CloseableHttpResponse closehttpResponseOfProfile = closeableHttpClient.execute(httpGet);
+		HttpEntity httpEntityOfProfile = closehttpResponseOfProfile.getEntity();
 
-		String profileResult = "";
+		String stringProfile = "";
 
-		System.out.println("profile--getStatusLine: " + profileResponse.getStatusLine());
-		if (profileResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			if (profileEntity != null) {
-				profileResult = EntityUtils.toString(profileEntity, "UTF-8");
-				System.out.println("profile: " + profileResult);
+		System.out.println("profile--getStatusLine: " + closehttpResponseOfProfile.getStatusLine());
+		if (closehttpResponseOfProfile.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			if (httpEntityOfProfile != null) {
+				stringProfile = EntityUtils.toString(httpEntityOfProfile, "UTF-8");
+
+				JSONObject jsonObjectProfile = new JSONObject(stringProfile);
+
+				System.out.println("profile: " + stringProfile);
+				System.out.println("--------------------------");
+				System.out.println("userId: " + jsonObjectProfile.getString("userId"));
+				System.out.println("displayName: " + jsonObjectProfile.getString("displayName"));
+				System.out.println("pictureUrl: " + jsonObjectProfile.getString("pictureUrl"));
+				System.out.println("statusMessage: " + jsonObjectProfile.getString("statusMessage"));
+				System.out.println("--------------------------");
+				
+				jSONObject.put("profile", stringProfile);
+			} else {
+				jSONObject.put("errorMessage", "ERROR! closehttpResponseOfProfile.getEntity() = null");
+				return jSONObject.toString();
 			}
 		} else {
 			System.out.println("profile--ERROR");
-
+			jSONObject.put("errorMessage", "ERROR! closehttpResponseOfProfile.getStatusLine() = " + closehttpResponseOfProfile.getStatusLine());
+			return jSONObject.toString();
 		}
-		System.out.println("profile--httppost: " + httpget.toString());
-		//profileResponse.close();
-
-		JSONObject profileJSONObject = new JSONObject(profileResult);
+		System.out.println("profile--httppost: " + httpGet.toString());
 
 		//傳回前端
-//		response.getWriter().print(profileJSONObject.toString());
+//		response.getWriter().print(jsonObject.toString());
 //		System.out.println("profile--finished");
 //		response.getWriter().close();
-//		profileResponse.close();
-//		httpclient.close();
-		return profileJSONObject.toString();
+//		httpResponseOfProfile.close();
+//		closeableHttpClient.close();
+		return jSONObject.toString();
 	}
 
 	@SuppressWarnings("null")
@@ -281,8 +303,8 @@ public class HomeController {
 	 * @throws ParserConfigurationException
 	 */
 	@RequestMapping(value = "/jwtTest", method = RequestMethod.POST)
-	public @ResponseBody
-	String jwtTest(HttpServletRequest request,
+//	@ResponseBody
+	public String jwtTest(HttpServletRequest request,
 		HttpServletResponse response, @RequestParam String idtoken) throws IOException, ParserConfigurationException {
 
 		String[] jwtArray = decodeJWT(idtoken, "Google");
@@ -302,7 +324,7 @@ public class HomeController {
 	 * @param company 公司
 	 * @return 傳回一陣列, JWT經轉譯後的內容, 格式為{header, body, signature}
 	 */
-	private String[] decodeJWT(String idtoken, String company) {
+	private String[] decodeJWT(String idtoken, String company) throws UnsupportedEncodingException {
 
 		String jwtToken = idtoken;
 		if (jwtToken == null) {
@@ -318,14 +340,14 @@ public class HomeController {
 		String base64EncodedSignature = jwtTokenArray[2];
 
 		Base64 base64Url = new Base64(true);
-		String header = new String(base64Url.decode(base64EncodedHeader));
+		String header = new String(base64Url.decode(base64EncodedHeader), "UTF-8");
 		System.out.println("JWT Header : " + header);
 
-		String body = new String(base64Url.decode(base64EncodedBody));
+		String body = new String(base64Url.decode(base64EncodedBody), "UTF-8");
 		System.out.println("JWT Body : " + body);
 		System.out.println("JWT Body.sub : " + new JSONObject(body).get("sub").toString());
 
-		String signature = new String(base64Url.decode(base64EncodedSignature));
+		String signature = new String(base64Url.decode(base64EncodedSignature), "UTF-8");
 		System.out.println("JWT Signature : " + signature);
 
 		String[] result = {header, body, signature};

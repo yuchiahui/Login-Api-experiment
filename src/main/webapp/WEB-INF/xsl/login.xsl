@@ -18,7 +18,7 @@
 					<META name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 					<SCRIPT src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></SCRIPT>
 					<SCRIPT src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></SCRIPT>
-					<SCRIPT src="/resources/js/jquery-3.3.1.min.js"></SCRIPT>
+					<SCRIPT src="/JAVASCRIPT/jquery-3.3.1.min.js"></SCRIPT>
 					<SCRIPT src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></SCRIPT>
 					<SCRIPT src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></SCRIPT>
 					<LINK rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"></LINK>
@@ -28,16 +28,16 @@
 					<!--<SCRIPT async="1" defer="1" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&amp;version=v3.2&amp;appId=324639151729654&amp;autoLogAppEvents=1"></SCRIPT>-->
 					<!--<SCRIPT id="facebook-jssdk" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&amp;version=v3.2&amp;appId=324639151729654&amp;autoLogAppEvents=1"></SCRIPT>
 					<SCRIPT src="https://connect.facebook.net/zh_TW/sdk.js?hash=703112b0b83be0a69fe420e25bbf97ad&amp;ua=modern_es6" async=""></SCRIPT>-->
-					<SCRIPT src="/resources/js/fbLogIn.js"></SCRIPT>
+					<SCRIPT src="/JAVASCRIPT/fbLogIn.js"></SCRIPT>
 				
 					<!-- Google Sign-In-->
 					<META name="google-signin-scope" content="profile email"/>
 					<META name="google-signin-client_id" content="386872756196-ct0oldlv5utvq3oi0lulegsgubrkjkn8.apps.googleusercontent.com"/>
 					<SCRIPT src="https://apis.google.com/js/platform.js?onload=init"></SCRIPT>
-					<SCRIPT src="/resources/js/googleSignIn.js"></SCRIPT>
+					<SCRIPT src="/JAVASCRIPT/googleSignIn.js"></SCRIPT>
 					
 					<!-- Line Log-In-->					
-					<SCRIPT src="/resources/js/lineLogIn.js"></SCRIPT>
+					<SCRIPT src="/JAVASCRIPT/lineLogIn.js"></SCRIPT>
 								
 					<TITLE>Login Api</TITLE>
 				</HEAD>

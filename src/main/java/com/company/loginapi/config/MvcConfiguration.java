@@ -23,7 +23,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 		xsltResolover.setSourceKey("xmlSource");
 
 		xsltResolover.setViewClass(XsltView.class);
-		xsltResolover.setViewNames(new String[]{"login","line"});
+		xsltResolover.setViewNames(new String[]{"login", "line"});
 		xsltResolover.setPrefix("/WEB-INF/xsl/");
 		xsltResolover.setSuffix(".xsl");
 
@@ -36,12 +36,12 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 		resolver.setPrefix("/WEB-INF/views/");
 		resolver.setSuffix(".jsp");
 		resolver.setOrder(2);
-		
+
 		return resolver;
 	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+		registry.addResourceHandler("/**").addResourceLocations("/");
 	}
 }
